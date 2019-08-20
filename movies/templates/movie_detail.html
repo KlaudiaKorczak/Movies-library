@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+{{external_object}}
+
+<div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10">
+          <form action="{% url 'comments' %}" method="post">
+            {% csrf_token %}
+            {% for field in comments_form %}
+
+                {{field}}
+            {% endfor %}
+              <br>
+             <div>
+                  <input type="submit" value="Send">
+             </div>
+          </form>
+      </div>
+    </div>
+{% endblock %}

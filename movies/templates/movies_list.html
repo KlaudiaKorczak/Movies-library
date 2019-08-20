@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2><b>List of all movies</b></h2>
+<table class="table">
+  <thead>
+    <tr>
+        {% for column in columns %}
+      <th scope="col">{{column}}</th>
+       {% endfor %}
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+     {% for movie in movies_list%}
+      <th scope="row">{{movie.id}}</th>
+      <td>{{movie.title}}</td>
+        {% endfor %}
+    </tr>
+  </tbody>
+</table>
+
+
+{% endblock %}
