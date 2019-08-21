@@ -17,13 +17,25 @@ from django.contrib import admin
 from django.urls import path
 import movies.views
 import movies.api_views
+from rest_framework import routers
+from django.urls import include, path, re_path
+# #
+# router = routers.DefaultRouter()
+# router.register(r'movies', movies.api_views.MoviesList)
+# router.register(r'comments', movies.api_views.CommentsList)
 
 urlpatterns = [
-    # path('movies/', movies.api_views.MoviesList.as_view()),
-
+    path('movies/', movies.api_views.MoviesList.as_view()),
+    # path('movies/', movies.api_views.MoviesCreate.as_view()),
+    path('comments/', movies.api_views.CommentsList.as_view()),
+    re_path('^top/(?P<from>\d{4}-\d{2}-\d{2})/(?P<to>\d{4}-\d{2}-\d{2})/$', movies.api_views.TopComments.as_view()),
+# r'^top/(?P<from>[0-9]{4}-(0?([1-9])|10|11|12)-((0|1|2)?([1-9])|[1-3]0|31))/$'
+    # path('', include(router.urls)),
+    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
-    path('', movies.views.home, name='home'),
-    path('movies/', movies.views.movies, name='movies'),
-    path('comments/', movies.views.comments, name='comments'),
+    # path('', movies.views.home, name='home'),
+    # path('movies/', movies.views.movies, name='movies'),
+    # path('comments/', movies.views.comments, name='comments'),
 
 ]
+datepattern = '[0-9]{4}-(0?([1-9])|10|11|12)-((0|1|2)?([1-9])|[1-3]0|31))'
