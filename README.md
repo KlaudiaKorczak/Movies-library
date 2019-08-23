@@ -5,7 +5,7 @@ Django Rest Api:
 - SQLite db
 
 
-## How to run tis project locally:
+## How to run this project locally:
 
 1) Clone this repository and go to the project directory
 
@@ -29,7 +29,21 @@ or
     python manage.py runserver
     ```
 
-4) Go to:
-- Movies endpoint (http://localhost:8000/movies/)
-- Comments endpoint (http://localhost:8000/comments/)
-- Top comments endpoint (http://localhost:8000/top/)
+4) Go to (http://localhost:8000)
+
+### Movies endpoint (http://localhost:8000/movies/)
+- GET
+- POST
+required request body : ```{"title": "Movie title"}```
+### Comments endpoint (http://localhost:8000/comments/)
+- GET:
+possible filtering from Rest Tool` -> Filters -> Movie_id` or `http://localhost:8000/comments/?movie_id={id}`
+- POST:
+required request body:
+```{
+    "movie_id": id,
+    "body": "Comment body"
+    }```
+### Top comments endpoint (http://localhost:8000/top/)
+- GET
+Dates params in url are optional for date range filtering: `http://localhost:8000/top/date/date`. Date format: `yyyy-mm-dd' e.q. 2019-08-20`
