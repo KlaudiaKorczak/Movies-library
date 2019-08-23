@@ -34,16 +34,16 @@ or
 ### Movies endpoint (http://localhost:8000/movies/)
 - GET
 - POST
-required request body : ```{"title": "Movie title"}```
+required request body : `{"title": "Movie title"}`
 ### Comments endpoint (http://localhost:8000/comments/)
-- GET:
+- GET: 
 possible filtering from Rest Tool` -> Filters -> Movie_id` or `http://localhost:8000/comments/?movie_id={id}`
-- POST:
+- POST: 
 required request body:
-```{
+`{
     "movie_id": id,
     "body": "Comment body"
-    }```
+    }`
 ### Top comments endpoint (http://localhost:8000/top/)
-- GET
-Dates params in url are optional for date range filtering: `http://localhost:8000/top/date/date`. Date format: `yyyy-mm-dd' e.q. 2019-08-20`
+- GET: 
+Dates params in url are optional for date range filtering: `http://localhost:8000/top/date/date`. Date format: `yyyy-mm-dd e.q. 2019-08-20`
