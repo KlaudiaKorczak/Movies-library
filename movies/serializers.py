@@ -6,7 +6,7 @@ from movies.models import Movie, Comment, Ratings
 class RatingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ratings
-        fields = ['Source', 'Value']
+        fields = '__all__'
 
 
 class MoviesSerializer(serializers.ModelSerializer):
@@ -14,9 +14,7 @@ class MoviesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ['Title', 'Year', 'Rated', 'Released', 'Runtime', 'Genre', 'Director', 'Writer', 'Actors', 'Plot',
-                  'Language', 'Country', 'Awards', 'Poster', 'Ratings', 'Metascore', 'imdbRating', 'imdbVotes', 'imdbID', 'Type',
-                  'DVD', 'BoxOffice', 'Production', 'Website', 'Response']
+        fields = '__all__'
 
     def create(self, validated_data):
         ratings_data = validated_data.pop('Ratings')

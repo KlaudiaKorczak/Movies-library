@@ -23,7 +23,7 @@ class MoviesList(APIView):
         except Exception as e:
             return Response({"Error": str(e)})
 
-    def post(self, request, format=None):
+    def post(self, request):
         try:
             title = request.data.get('title')
             if len(request.data) != 1 or request.data.get('title') is None:
@@ -48,6 +48,8 @@ class TopComments(APIView):
             date_to = kwargs.get('to', DEFAULT_DATES['TO'])
             movies = Movie.objects.all()
             comments = Comment.objects
+            if not movies or not comments.all():
+                return Response("No data found.")
             sorted_numbers = count_comments(movies, comments, date_from, date_to)
             statistics = generate_statistics(sorted_numbers)
             serialized_stats = TopCommentsSerializer(statistics, many=True).data

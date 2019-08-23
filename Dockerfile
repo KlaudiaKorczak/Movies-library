@@ -9,10 +9,10 @@ ENV PYTHONUNBUFFERED 1
 # create root directory for our project in the container
 RUN mkdir /Movies_library
 
-# Set the working directory to /music_service
+# Set the working directory to /Movies_library
 WORKDIR /Movies_library
 
-# Copy the current directory contents into the container at /music_service
+# Copy the current directory contents into the container at /Movies_library
 ADD . /Movies_library/
 
 # Install any needed packages specified in requirements.txt
