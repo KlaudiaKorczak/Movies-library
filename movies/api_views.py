@@ -1,84 +1,63 @@
-from rest_framework.generics import ListAPIView
-from rest_framework import viewsets
+import datetime
+import json
+from django_filters import rest_framework as filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import generics
+from rest_framework.generics import ListCreateAPIView
 from movies.models import Movie, Comment
 from movies.serializers import MoviesSerializer, CommentsSerializer, TopCommentsSerializer
-import urllib, json
+from movies.utils.prepare_statistics import count_comments, generate_statistics
 from urllib.request import urlopen
-from django_filters import rest_framework as filters
-import collections
 
-# Api view renders data into the json format.
+DEFAULT_DATES = {'FROM': '2019-08-19',
+                 'TO': datetime.datetime.utcnow()}
 
 
 class MoviesList(APIView):
-    # queryset = Movie.objects.all()
-    # serializer_class = MoviesSerializer
-    # filter_backends = (filters.DjangoFilterBackend,)
-    # filterset_fields = ('Title',)
-
     def get(self, request):
-        movies = Movie.objects.all()
-        serializer = MoviesSerializer(movies, many=True)
-        return Response(serializer.data)
-
+        try:
+            movies = Movie.objects.all()
+            serializer = MoviesSerializer(movies, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"Error": str(e)})
 
     def post(self, request, format=None):
-        title = request.data.get('title')
-        url = "http://www.omdbapi.com/?t={}&apikey=459014fb".format(title)
-        json_url = urlopen(url)
-        data = json.loads(json_url.read())
-        serializer = MoviesSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CommentsList(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentsSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('movie_id', )
+        try:
+            title = request.data.get('title')
+            if len(request.data) != 1 or request.data.get('title') is None:
+                return Response("Invalid data. Request body must contain only the 'title'.",
+                                status=status.HTTP_400_BAD_REQUEST)
+            url = "http://www.omdbapi.com/?t={}&apikey=459014fb".format(title)
+            json_url = urlopen(url)
+            data = json.loads(json_url.read())
+            serializer = MoviesSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"Error": str(e)})
 
 
 class TopComments(APIView):
     def get(self, request, **kwargs):
-        date_from = kwargs.get('from', '2019-08-19')
-        date_to = kwargs.get('to', '2019-09-30')
-        print(request.data)
-        # date_from = "2011-01-01"
-        # date_to ="2019-08-21"
-        movies = Movie.objects.all()
-        sorted_numbers = count_comments(movies,  date_from, date_to)
-        results_list = generate_statistics(sorted_numbers)
-        # print(results_list)
-        ser = TopCommentsSerializer(results_list, many=True).data
-        # date_from = request.date_from
-        return Response(results_list)
+        try:
+            date_from = kwargs.get('from', DEFAULT_DATES['FROM'])
+            date_to = kwargs.get('to', DEFAULT_DATES['TO'])
+            movies = Movie.objects.all()
+            comments = Comment.objects
+            sorted_numbers = count_comments(movies, comments, date_from, date_to)
+            statistics = generate_statistics(sorted_numbers)
+            serialized_stats = TopCommentsSerializer(statistics, many=True).data
+            return Response(serialized_stats)
+        except Exception as e:
+            return Response({"Error": str(e)})
 
 
-def count_comments(movies, date_from, date_to):
-    movies_comments = {}
-    for movie in movies:
-        comments_count = Comment.objects.filter(created__range=[date_from, date_to], movie_id=movie.id).count()
-        movies_comments[movie.id] = comments_count
-    sorted_numbers = sorted(movies_comments.items(), key=lambda kv: kv[1], reverse=True)
-    return sorted_numbers
-
-
-def generate_statistics(sorted_numbers):
-    rank = 1
-    current_value = sorted_numbers[0][1]
-    results_list = []
-
-    for pair in sorted_numbers:
-        if pair[1] < current_value:
-            current_value = pair[1]
-            rank += 1
-        results_list.append({'movie_id': pair[0], 'total_comments': pair[1], 'rank': rank})
-
-    return results_list
+class CommentsList(ListCreateAPIView):
+        queryset = Comment.objects.all()
+        serializer_class = CommentsSerializer
+        filter_backends = (filters.DjangoFilterBackend,)
+        filterset_fields = ('movie_id', )
