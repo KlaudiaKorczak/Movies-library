@@ -29,7 +29,7 @@ or
     python manage.py runserver
     ```
 
-4) Go to (http://localhost:8000)
+4) Go to :
 
 ### Movies endpoint (http://localhost:8000/movies/)
 - GET
