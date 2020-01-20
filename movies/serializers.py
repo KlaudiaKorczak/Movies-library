@@ -1,3 +1,6 @@
+
+from dateutil.relativedelta import relativedelta
+from django.utils.datetime_safe import datetime
 from rest_framework import serializers
 
 from movies.models import Movie, Comment, Ratings
@@ -9,8 +12,15 @@ class RatingsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['movie_id', 'body']
+
+
 class MoviesSerializer(serializers.ModelSerializer):
-    Ratings = RatingsSerializer(many=True)
+    Ratings = RatingsSerializer(many=True, required=False)
+    Title = serializers.CharField(required=True)
 
     class Meta:
         model = Movie
@@ -25,10 +35,9 @@ class MoviesSerializer(serializers.ModelSerializer):
         return movie
 
 
-class CommentsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['movie_id', 'body']
+class DateFormatSerializer(serializers.Serializer):
+    start = serializers.DateField(format="%Y-%m-%d",  default=datetime.now() - relativedelta(weeks=6))
+    end = serializers.DateField(format="%Y-%m-%d", default=datetime.now())
 
 
 class TopCommentsSerializer(serializers.Serializer):

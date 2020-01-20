@@ -1,12 +1,14 @@
 import movies.api_views
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'movies', movies.api_views.Movies, basename='movies')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('movies/', movies.api_views.MoviesList.as_view()),
     path('comments/', movies.api_views.CommentsList.as_view()),
-    re_path('^top/(?P<from>\d{4}-\d{2}-\d{2})/(?P<to>\d{4}-\d{2}-\d{2})/$', movies.api_views.TopComments.as_view()),
-    re_path('^top/(?P<from>\d{4}-\d{2}-\d{2})/$', movies.api_views.TopComments.as_view()),
-    path('top/', movies.api_views.TopComments.as_view()),  # parameters for top/ endpoint are optional
+    path('top/', movies.api_views.Top.as_view()),  # parameters for top/ endpoint are optional
 ]
+urlpatterns += router.urls
